@@ -1,3 +1,4 @@
 # StockBot
 
-Bot that trades stocks.
+Transformer Based Deep Q Learning Bot to trade stocks.
+Implemented in PyTorch.
