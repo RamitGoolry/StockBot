@@ -1,4 +1,5 @@
 .DS_Store
 *.swp
-StockBot\ Notes/.obsidian/*
-StockBot\ Notes/obsidian.css
+.vscode
+api.json
+data
