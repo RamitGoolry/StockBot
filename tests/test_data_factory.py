@@ -1,6 +1,4 @@
 import os, sys
-
-from numpy.lib.stride_tricks import as_strided
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Imports modules form parent directory
 
@@ -33,7 +31,7 @@ def test_save_data_unloaded():
     factory = DataFactory(api_key)
 
     try:
-        filename = factory.save_data()
+        factory.save_data()
         assert False, "ValueError not thrown"
     except:
         assert True
