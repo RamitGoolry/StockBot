@@ -1,4 +1,3 @@
-import json
 from alpha_vantage.timeseries import TimeSeries
 
 class DataFactory(object):

@@ -6,3 +6,4 @@ Implemented in PyTorch.
 ## TODOs:
 - CryptoCurrency Trading
 - Get larger data source than AlphaVantage
+- Trading Environment

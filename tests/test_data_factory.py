@@ -32,6 +32,6 @@ def test_save_data_unloaded():
 
     try:
         factory.save_data()
-        assert False, "ValueError not thrown"
+        assert False, "ValueError not thrown, savind data never loaded"
     except:
         assert True

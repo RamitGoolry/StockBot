@@ -5,5 +5,5 @@ PYTHON = python3
 test:
 	pytest
 
-data: 
-	${PYTHON} data_factory.py
+clean:
+	pyclean
