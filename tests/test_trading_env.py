@@ -45,17 +45,17 @@ def test_trading_env_buy_securities():
     ONE_BITCOIN_PRICE = te.get_conversion()
     te.trade(Actions.BUY, 'BTC', ONE_BITCOIN_PRICE)
 
-    assert te.portfolio['BTC'] == 1, 'Invalid Securities Balance'
+    assert te.portfolio['BTC'] == 1, 'Incorrect Securities Balance'
 
     ONE_BITCOIN_PRICE = te.get_conversion()
     te.trade(Actions.BUY, 'BTC', ONE_BITCOIN_PRICE)
 
-    assert te.portfolio['BTC'] == 2, 'Invalid Securities Balance'
+    assert te.portfolio['BTC'] == 2, 'Incorrect Securities Balance'
 
     ONE_BITCOIN_PRICE = te.get_conversion()
     te.trade(Actions.BUY, 'BTC', ONE_BITCOIN_PRICE)
 
-    assert te.portfolio['BTC'] == 3, 'Invalid Securities Balance'
+    assert te.portfolio['BTC'] == 3, 'Incorrect Securities Balance'
 
 def test_trading_env_sell_securities():
     te = TradingEnv(Portfolio(100000), TEST_DATA_SOURCE)
@@ -65,7 +65,7 @@ def test_trading_env_sell_securities():
     ONE_BITCOIN_PRICE = te.get_conversion()
     te.trade(Actions.SELL, 'BTC', 1)
 
-    assert te.portfolio['BTC'] == 0, 'Invalid Securities Balance'
+    assert te.portfolio['BTC'] == 0, 'Incorrect Securities Balance'
 
 def test_trading_env_hold():
     te = TradingEnv(Portfolio(100), TEST_DATA_SOURCE)
@@ -78,9 +78,8 @@ def test_trading_env_sell_normal():
     te = TradingEnv(Portfolio(5000), TEST_DATA_SOURCE)
     ONE_BITCOIN_PRICE = te.get_conversion()
 
-    # Buying some 1 coin to set up sale
+    # Buying 1 coin to set up sale
     te.trade(Actions.BUY, 'BTC', ONE_BITCOIN_PRICE)
-
     te.trade(Actions.SELL, 'BTC', 1)
 
     assert isclose(te.portfolio.balance, 5000), 'Incorrect balance after selling'

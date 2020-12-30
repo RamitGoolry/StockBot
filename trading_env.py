@@ -5,10 +5,7 @@
 import pandas as pd
 import numpy as np
 
-from data_factory import DataFactory
 from enum import Enum
-from dataclasses import dataclass, field
-from typing import List, Tuple
 from collections import defaultdict
 
 # Reward Values for different possible actions
@@ -28,9 +25,9 @@ class Actions(Enum):
 
 class Portfolio:
     # Makes an empty list which will hold a (Company, Stock_value) list
-    def __init__(self, amount, securities = defaultdict(lambda: 0)):
+    def __init__(self, amount):
         self.balance = amount
-        self.bought_securities = securities
+        self.bought_securities = defaultdict(lambda: 0)
 
     def perform_buy(self, symbol, amount, conversion):
         self.bought_securities[symbol] += amount / conversion
@@ -63,8 +60,7 @@ class TradingEnv:
 
     def get_conversion(self):
         '''
-        Returns the converstion rate from USD to the price per Stock / Coin
-        Is the bilinear average of open, close, high and low to get a representative estimate
+        Returns the converstion rate from USDs per Stock/Coin
         '''
         state = self.state_gen.current_state()
         return np.mean([state.open, state.close, state.high, state.low])
