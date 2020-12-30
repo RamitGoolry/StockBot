@@ -8,19 +8,19 @@ import pandas as pd
 
 with open('api.json') as api_file: # Getting API Key
     api = json.load(api_file)
-    api_key = api['api_key']
+    api_key = api['alphavantage']
     del api
 
 def test_load_data():
     factory = DataFactory(api_key)
-    factory.load_data_intraday('GOOGL')
+    factory.load_data_intraday('GOOGL', interval='60min')
 
     assert isinstance(factory.data, pd.DataFrame)
     assert len(factory.data) > 0
 
 def test_save_data_normal():
     factory = DataFactory(api_key)
-    factory.load_data_intraday('GOOGL')
+    factory.load_data_intraday('GOOGL', interval='60min')
 
     filename = factory.save_data()
     assert os.path.exists(filename)
@@ -32,6 +32,6 @@ def test_save_data_unloaded():
 
     try:
         factory.save_data()
-        assert False, "ValueError not thrown"
+        assert False, "ValueError not thrown, savind data never loaded"
     except:
         assert True
