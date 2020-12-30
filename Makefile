@@ -3,6 +3,9 @@ PYTHON = python3
 test:
 	pytest
 
+binance:
+	${PYTHON} binance_data_pull.py
+
 clean:
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
