@@ -3,6 +3,9 @@ PYTHON = python3.8
 main:
 	${PYTHON} main.py
 
+debug:
+	DEBUG=1 make main
+
 test:
 	${PYTHON} -m pytest
 

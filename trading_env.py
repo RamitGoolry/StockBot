@@ -8,7 +8,7 @@ import numpy as np
 from enum import Enum
 from collections import defaultdict
 
-from tensorflow.python.keras.backend_config import _EPSILON
+from debugger import log
 
 # Reward Values for different possible actions
 INVALID_BUY  = -0.25
@@ -18,12 +18,12 @@ VALID_BUY = 0
 
 PROFIT = 1
 LOSS   = -1
-HOLD = 0
+HELD = 0
 
-class Actions(Enum):
-    BUY = 0
-    SELL = 1
-    HOLD = 2
+# Actions
+BUY = 0
+SELL = 1
+HOLD = 2
 
 class Portfolio:
     # Makes an empty list which will hold a (Company, Stock_value) list
@@ -79,13 +79,14 @@ class TradingEnv:
         # State Format : (Stock Price, Stocks Held, Timestep) 
         # TODO Improve based on model (Timestep -> Transformer, No -> RNN, NLP of online data)
         mean_stock_price = np.mean([state_gen_state.open, state_gen_state.close, state_gen_state.high, state_gen_state.low])
+        log(f'[*] mean_stock_price - {mean_stock_price}')
         time_str = state_gen_state.name # TODO Use timestamp
 
-        return (mean_stock_price, self.portfolio['BTC']) # TODO More currencies
+        return np.array([mean_stock_price, self.portfolio['BTC'], self.portfolio.balance]) # TODO More currencies
 
 
     def _trade(self, action, company_symbol = None, amount = 0.00):
-        if action == Actions.BUY:
+        if action == BUY:
             if company_symbol == None:
                 raise ValueError('Symbol not specified')
 
@@ -98,7 +99,7 @@ class TradingEnv:
             self.portfolio.perform_buy(company_symbol, amount, self.get_conversion())
             return VALID_BUY, EPISODE_NOT_END
 
-        if action == Actions.SELL:
+        if action == SELL:
             if company_symbol == None:
                 raise ValueError('Symbol not specified')
 
@@ -117,10 +118,10 @@ class TradingEnv:
             # so that I can check my DQN is working
             return PROFIT, EPISODE_END
 
-        if action == Actions.HOLD:
-            return HOLD, EPISODE_END
+        if action == HOLD:
+            return HELD, EPISODE_NOT_END
 
     def trade(self, action, company_symbol= None, amount = 0.00):
-        reward = self._trade(action, company_symbol, amount)
+        reward, done = self._trade(action, company_symbol, amount)
         self.state_gen.next_state()
-        return reward
+        return reward, done
