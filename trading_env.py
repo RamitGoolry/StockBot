@@ -8,6 +8,8 @@ import numpy as np
 from enum import Enum
 from collections import defaultdict
 
+from tensorflow.python.keras.backend_config import _EPSILON
+
 # Reward Values for different possible actions
 INVALID_BUY  = -0.25
 INVALID_SELL = -0.25
@@ -41,8 +43,13 @@ class Portfolio:
         return self.bought_securities[key]
 
 class DataIterator:
-    def __init__(self, filename):
-        self._prices = pd.read_csv(filename).iterrows()
+    def __init__(self, filename, preprocessing = None):
+        df = pd.read_csv(filename) # TODO Window for 1 Dimensional Convolution
+
+        if preprocessing != None:
+            df = preprocessing(df)
+
+        self._prices = df.iterrows()
         self._state = None
         self.next_state()
 
@@ -53,10 +60,12 @@ class DataIterator:
     def current_state(self):
         return self._state[1]
 
+EPISODE_END = True
+EPISODE_NOT_END = False
 class TradingEnv:
-    def __init__(self, portfolio, filename):
+    def __init__(self, portfolio : Portfolio, filename : str, preprocessing = None):
         self.portfolio = portfolio
-        self.state_gen = DataIterator(filename)
+        self.state_gen = DataIterator(filename, preprocessing)
 
     def get_conversion(self):
         '''
@@ -65,26 +74,36 @@ class TradingEnv:
         state = self.state_gen.current_state()
         return np.mean([state.open, state.close, state.high, state.low])
 
+    def get_state(self):
+        state_gen_state = self.state_gen.current_state()
+        # State Format : (Stock Price, Stocks Held, Timestep) 
+        # TODO Improve based on model (Timestep -> Transformer, No -> RNN, NLP of online data)
+        mean_stock_price = np.mean([state_gen_state.open, state_gen_state.close, state_gen_state.high, state_gen_state.low])
+        time_str = state_gen_state.name # TODO Use timestamp
+
+        return (mean_stock_price, self.portfolio['BTC']) # TODO More currencies
+
+
     def _trade(self, action, company_symbol = None, amount = 0.00):
         if action == Actions.BUY:
             if company_symbol == None:
                 raise ValueError('Symbol not specified')
 
             if self.portfolio.balance == 0:
-                return INVALID_BUY
+                return INVALID_BUY, EPISODE_NOT_END
 
             if amount > self.portfolio.balance: # TODO Might have to make this invalid
                 amount = self.portfolio.balance
 
             self.portfolio.perform_buy(company_symbol, amount, self.get_conversion())
-            return VALID_BUY
+            return VALID_BUY, EPISODE_NOT_END
 
         if action == Actions.SELL:
             if company_symbol == None:
                 raise ValueError('Symbol not specified')
 
             if self.portfolio[company_symbol] == 0:
-                return INVALID_SELL
+                return INVALID_SELL, EPISODE_NOT_END
 
             if amount > self.portfolio[company_symbol]:
                 # If I am trying to sell more than I have (but I still have some)
@@ -96,10 +115,10 @@ class TradingEnv:
             # TODO Figure out how you want to check if the sale put you in a net profit or loss
             # For now I am just assuming it is profit to see a DQN Bot which can learn to sell valid stock
             # so that I can check my DQN is working
-            return PROFIT
+            return PROFIT, EPISODE_END
 
         if action == Actions.HOLD:
-            return HOLD
+            return HOLD, EPISODE_END
 
     def trade(self, action, company_symbol= None, amount = 0.00):
         reward = self._trade(action, company_symbol, amount)

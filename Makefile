@@ -1,7 +1,10 @@
-PYTHON = python3
+PYTHON = python3.8
+
+main:
+	${PYTHON} main.py
 
 test:
-	pytest
+	${PYTHON} -m pytest
 
 binance:
 	${PYTHON} binance_data_pull.py

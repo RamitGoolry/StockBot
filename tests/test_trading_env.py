@@ -22,7 +22,7 @@ def test_trading_env_buy_normal():
 
     reward = te.trade(Actions.BUY, 'BTC', 100)
 
-    assert reward == VALID_BUY
+    assert reward[0] == VALID_BUY
     assert prev_amount - te.portfolio.balance == 100
     assert te.portfolio.balance == 900
 
@@ -30,14 +30,14 @@ def test_trading_env_buy_under():
     te = TradingEnv(Portfolio(100), TEST_DATA_SOURCE)
     reward = te.trade(Actions.BUY, 'BTC', 105)
 
-    assert reward == VALID_BUY
+    assert reward[0] == VALID_BUY
     assert te.portfolio.balance == 0
 
 def test_trading_env_buy_zero():
     te = TradingEnv(Portfolio(0), TEST_DATA_SOURCE)
     reward = te.trade(Actions.BUY, 'BTC', 105)
 
-    assert reward == INVALID_BUY
+    assert reward[0] == INVALID_BUY
     assert te.portfolio.balance == 0
 
 def test_trading_env_buy_securities():
@@ -71,7 +71,7 @@ def test_trading_env_hold():
     te = TradingEnv(Portfolio(100), TEST_DATA_SOURCE)
     reward = te.trade(Actions.HOLD)
 
-    assert reward == HOLD
+    assert reward[0] == HOLD
     assert te.portfolio.balance == 100
 
 def test_trading_env_sell_normal():

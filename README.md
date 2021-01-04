@@ -1,9 +1,8 @@
 # StockBot
 
 Transformer Based Deep Q Learning Bot to trade stocks.
-Implemented in PyTorch.
+Implemented in Tensorflow
 
 ## TODOs:
 - CryptoCurrency Trading
-- Get larger data source than AlphaVantage
-- Trading Environment
+- Convolutional Transformer Based Neural Network
