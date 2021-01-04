@@ -42,10 +42,6 @@ def main():
 
                 action = agent.epsilon_greedy_policy(state, epsilon)
 
-                if action == 3: # DEBUG
-                    import pdb;
-                    pdb.set_trace()
-
                 if action == BUY:
                     balance = env.portfolio.balance
                     reward, done = env.trade(action, 'BTC', balance * RISK)
@@ -62,7 +58,7 @@ def main():
                 agent.update_replay_memory((state, action, reward, new_state, done))
                 agent.train(done)
             
-            episodes.set_postfix({'Episode Reward' : episode_reward})
+            episodes.set_postfix({'Episode Reward' : episode_reward, 'Net Worth' : env.get_net_worth()})
 
 if __name__ == '__main__':
     main()

@@ -83,7 +83,9 @@ class TradingEnv:
         time_str = state_gen_state.name # TODO Use timestamp
 
         return np.array([mean_stock_price, self.portfolio['BTC'], self.portfolio.balance]) # TODO More currencies
-
+    
+    def get_net_worth(self):
+        return self.portfolio.balance + self.portfolio['BTC'] * self.get_conversion()
 
     def _trade(self, action, company_symbol = None, amount = 0.00):
         if action == BUY:

@@ -96,9 +96,8 @@ class DQNAgent:
             log(f'\n[*] Exploring')
             return np.random.randint(OUTPUT_SHAPE) # TODO Change when dealing with multiple stocks.
         else:
-            log(f'\n[*] Exploiting {state}')
+            log(f'\n[*] Exploiting')
             Q_values = self.model.predict(state.reshape(1, INPUT_SHAPE[0]))
-            log(f'[*] {Q_values.shape}')
             return np.argmax(Q_values)
 
     def update_replay_buffer(self, transition):
@@ -153,10 +152,10 @@ class DQNAgent:
             X.append(state)
             y.append(current_Q_values)
         
-            X = np.array(X)
-            y = np.array(y)
+        X = np.array(X)
+        y = np.array(y)
 
-        self.model.fit(X, y, batch_size=MINIBATCH_SIZE, shuffe = False) # TODO Tensorboard
+        self.model.fit(X, y, batch_size=MINIBATCH_SIZE, shuffle = False, verbose = 0) # TODO Tensorboard
         # , callbacks = [self.tensorboard] if terminal_state else None)
 
         # Update target network counter every episode to determine when to update target_model
