@@ -59,6 +59,7 @@ def main():
                 agent.train(done)
             
             episodes.set_postfix({'Episode Reward' : episode_reward, 'Net Worth' : env.get_net_worth()})
+            # FIXME Episode Reward is always 1.
 
 if __name__ == '__main__':
     main()

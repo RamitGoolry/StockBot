@@ -9,7 +9,7 @@ from keras.callbacks import TensorBoard
 from tensorflow.python.ops.gen_math_ops import log1p
 from debugger import log
 
-INPUT_SHAPE = (3, ) # works, but that is not what I am expecting
+INPUT_SHAPE = (3,)
 OUTPUT_SHAPE = 3
 
 MIN_REPLAY_BUFFER_SIZE = 1000
@@ -137,7 +137,6 @@ class DQNAgent:
         X, y = [], []
 
         for idx, (state, action, reward, next_state, done) in enumerate(minibatch):
-
             # If not a teminal state, get new q from future states, otherwise set it to 0
             # Bellman Optimality for Q Values
             if not done:

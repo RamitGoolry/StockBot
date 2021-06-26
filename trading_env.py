@@ -43,22 +43,21 @@ class Portfolio:
         return self.bought_securities[key]
 
 class DataIterator:
-    def __init__(self, filename, preprocessing = None):
-        df = pd.read_csv(filename) # TODO Window for 1 Dimensional Convolution
+    def __init__(self, filename, preprocessing = None, window_size = 1):
+        self.df = pd.read_csv(filename) # TODO Window for 1 Dimensional Convolution
 
         if preprocessing != None:
-            df = preprocessing(df)
+            self.df = preprocessing(self.df)
 
-        self._prices = df.iterrows()
-        self._state = None
-        self.next_state()
+        self.idx = 0
+        self.window_size = window_size
 
     def next_state(self):
-        self._state = next(self._prices)
+        self.idx += 1
         return self.current_state()
 
     def current_state(self):
-        return self._state[1]
+        return self.df.iloc[self.idx : self.idx + self.window_size]
 
 EPISODE_END = True
 EPISODE_NOT_END = False
@@ -80,7 +79,7 @@ class TradingEnv:
         # TODO Improve based on model (Timestep -> Transformer, No -> RNN, NLP of online data)
         mean_stock_price = np.mean([state_gen_state.open, state_gen_state.close, state_gen_state.high, state_gen_state.low])
         log(f'[*] mean_stock_price - {mean_stock_price}')
-        time_str = state_gen_state.name # TODO Use timestamp
+        # time_str = state_gen_state.name # TODO Use timestamp
 
         return np.array([mean_stock_price, self.portfolio['BTC'], self.portfolio.balance]) # TODO More currencies
     
@@ -115,9 +114,13 @@ class TradingEnv:
 
             self.portfolio.perform_sell(company_symbol, amount, self.get_conversion())
 
-            # TODO Figure out how you want to check if the sale put you in a net profit or loss
-            # For now I am just assuming it is profit to see a DQN Bot which can learn to sell valid stock
-            # so that I can check my DQN is working
+            # NEXT Encode Profit and Loss into the system. Create a reset() function that resets the environment
+            # to a random state from which the program starts to learn. The reset function is the start of your
+            # Episode, so save the net worth of your portfolio at that time. Then, when you are Selling 
+            # (End of Episode), You calculate the difference between the net worth at the start vs the end.
+            # If net worth has increased, then you give positive reward. If net worth has decreased, you get a 
+            # Negative Reward.
+            
             return PROFIT, EPISODE_END
 
         if action == HOLD:
